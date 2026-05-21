@@ -4,6 +4,12 @@ const nav = document.querySelector(".nav");
 const navLinks = document.querySelectorAll('.nav a, .footer-nav a, .btn[href^="#"]');
 const fadeItems = document.querySelectorAll(".fade-in");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const contactForm = document.querySelector("#contact-form");
+const formStatus = document.querySelector("#form-status");
+const submitButton = contactForm?.querySelector('button[type="submit"]');
+const submitButtonLabel = submitButton?.textContent ?? "Contact Us";
+const formSendingMessage = contactForm?.dataset.sending ?? "Sending...";
+const formErrorMessage = contactForm?.dataset.error ?? "Something went wrong. Please try again.";
 
 function closeMenu() {
   if (!nav || !menuToggle) {
@@ -98,4 +104,59 @@ if (prefersReducedMotion) {
   });
 
   fadeItems.forEach((item) => observer.observe(item));
+}
+
+if (contactForm && submitButton && formStatus) {
+  const contactEndpoint = window.location.protocol === "file:"
+    ? "http://127.0.0.1:8000/api/contact"
+    : "/api/contact";
+
+  contactForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!contactForm.reportValidity()) {
+      return;
+    }
+
+    const formData = new FormData(contactForm);
+    const payload = new URLSearchParams();
+
+    formData.forEach((value, key) => {
+      payload.append(key, String(value));
+    });
+
+    formStatus.textContent = "";
+    formStatus.className = "form-status";
+    submitButton.disabled = true;
+    submitButton.textContent = formSendingMessage;
+    contactForm.setAttribute("aria-busy", "true");
+
+    try {
+      const response = await fetch(contactEndpoint, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        body: payload.toString()
+      });
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.message || formErrorMessage);
+      }
+
+      formStatus.textContent = result.message || "Your message has been sent.";
+      formStatus.classList.add("is-success");
+      contactForm.reset();
+    } catch (error) {
+      formStatus.textContent = error.message || formErrorMessage;
+      formStatus.classList.add("is-error");
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = submitButtonLabel;
+      contactForm.removeAttribute("aria-busy");
+    }
+  });
 }

@@ -14,10 +14,13 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   />
+  <link rel="alternate" hreflang="en" href="index.html" />
+  <link rel="alternate" hreflang="bg" href="bg.html" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="site-header" id="home">
+  <header class="site-header">
     <div class="container header-inner">
       <a href="#home" class="logo" aria-label="Green Project Company home">
         <img src="img/final-logo-png-transparent.png" alt="Green Project Company logo" />
@@ -40,12 +43,16 @@
         <a href="#cooling">Cooling</a>
         <a href="#team">Team</a>
         <a href="#contact">Contact</a>
+        <div class="lang-switch" aria-label="Language switcher">
+          <a href="index.html" class="lang-link is-active" aria-current="page">EN</a>
+          <a href="bg.html" class="lang-link">BG</a>
+        </div>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero section" aria-labelledby="hero-title">
+    <section class="hero section" id="home" aria-labelledby="hero-title">
       <div class="container hero-grid">
         <div class="hero-copy fade-in">
           <h1 id="hero-title">Green Project Company</h1>
@@ -67,10 +74,6 @@
           </div>
           <div class="hero-card two">
             <img src="img/Lenovo E14.png" alt="" />
-          </div>
-          <div class="hero-badge">
-            <strong>Main focus: refurbished IT</strong>
-            <p>Enterprise equipment, secure erasure, audits, and lifecycle services for business clients.</p>
           </div>
         </div>
       </div>
@@ -302,7 +305,13 @@
         </div>
 
         <div class="contact-grid">
-          <form class="contact-form fade-in">
+          <form
+            class="contact-form fade-in"
+            id="contact-form"
+            data-sending="Sending..."
+            data-error="Something went wrong. Please try again."
+            novalidate
+          >
             <div class="form-row">
               <div class="form-group">
                 <label for="name">Name</label>
@@ -337,6 +346,14 @@
               ></textarea>
             </div>
 
+            <input type="hidden" name="lang" value="en" />
+
+            <div class="visually-hidden" aria-hidden="true">
+              <label for="website">Website</label>
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
             <button type="submit" class="btn">Contact Us</button>
           </form>
 
