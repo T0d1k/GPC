@@ -1,13 +1,19 @@
 const header = document.querySelector(".site-header");
 const menuToggle = document.querySelector(".menu-toggle");
 const nav = document.querySelector(".nav");
-const navLinks = document.querySelectorAll('.nav a, .footer-nav a, .btn[href^="#"]');
+const navLinks = document.querySelectorAll('.nav a, .footer-nav a, .btn[href^="#"], .contact-bubble[href^="#"]');
 const fadeItems = document.querySelectorAll(".fade-in");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const contactForm = document.querySelector("#contact-form");
+const contactSection = document.querySelector("#contact");
+const contactBubble = document.querySelector("[data-contact-bubble]");
 const formStatus = document.querySelector("#form-status");
 const submitButton = contactForm?.querySelector('button[type="submit"]');
 const submitButtonLabel = submitButton?.textContent ?? "Contact Us";
+const contactEndpoint = window.location.protocol === "file:"
+  ? "http://127.0.0.1:8000/api/contact"
+  : new URL("api/contact", window.location.href).toString();
+const formSuccessMessage = contactForm?.dataset.success ?? "Your message has been sent.";
 const formSendingMessage = contactForm?.dataset.sending ?? "Sending...";
 const formErrorMessage = contactForm?.dataset.error ?? "Something went wrong. Please try again.";
 
@@ -19,6 +25,22 @@ function closeMenu() {
   nav.classList.remove("open");
   menuToggle.classList.remove("active");
   menuToggle.setAttribute("aria-expanded", "false");
+}
+
+function setContactBubbleHidden(isHidden) {
+  if (!contactBubble) {
+    return;
+  }
+
+  contactBubble.classList.toggle("is-hidden", isHidden);
+
+  if (isHidden) {
+    contactBubble.setAttribute("aria-hidden", "true");
+    contactBubble.setAttribute("tabindex", "-1");
+  } else {
+    contactBubble.removeAttribute("aria-hidden");
+    contactBubble.removeAttribute("tabindex");
+  }
 }
 
 function handleHeaderScroll() {
@@ -106,11 +128,19 @@ if (prefersReducedMotion) {
   fadeItems.forEach((item) => observer.observe(item));
 }
 
-if (contactForm && submitButton && formStatus) {
-  const contactEndpoint = window.location.protocol === "file:"
-    ? "http://127.0.0.1:8000/api/contact"
-    : "/api/contact";
+if (contactBubble && contactSection && "IntersectionObserver" in window) {
+  const bubbleObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      setContactBubbleHidden(entry.isIntersecting);
+    });
+  }, {
+    threshold: 0.2
+  });
 
+  bubbleObserver.observe(contactSection);
+}
+
+if (contactForm && submitButton && formStatus) {
   contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -147,7 +177,7 @@ if (contactForm && submitButton && formStatus) {
         throw new Error(result?.message || formErrorMessage);
       }
 
-      formStatus.textContent = result.message || "Your message has been sent.";
+      formStatus.textContent = result.message || formSuccessMessage;
       formStatus.classList.add("is-success");
       contactForm.reset();
     } catch (error) {

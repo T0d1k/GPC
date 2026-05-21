@@ -853,6 +853,58 @@ textarea {
   flex-wrap: wrap;
 }
 
+.contact-bubble {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 980;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(87, 199, 120, 0.2);
+  background: linear-gradient(135deg, #6ad287, var(--accent));
+  color: #062314;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  box-shadow: 0 18px 36px rgba(87, 199, 120, 0.26);
+  backdrop-filter: blur(14px);
+  transition:
+    opacity var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition),
+    background var(--transition),
+    color var(--transition);
+}
+
+.contact-bubble:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #77d994, var(--accent-hover));
+  color: #062314;
+  box-shadow: 0 22px 40px rgba(87, 199, 120, 0.3);
+}
+
+.contact-bubble:active {
+  transform: translateY(0);
+  background: linear-gradient(135deg, #77d994, var(--accent-hover));
+  color: #062314;
+  box-shadow: 0 14px 28px rgba(87, 199, 120, 0.24);
+}
+
+.contact-bubble:focus-visible {
+  outline: 2px solid rgba(87, 199, 120, 0.32);
+  outline-offset: 3px;
+}
+
+.contact-bubble.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+}
+
 @keyframes float {
   0%,
   100% {
@@ -979,6 +1031,15 @@ textarea {
   .hero-card.two {
     inset: 21% 0 0 30%;
   }
+
+  .contact-bubble {
+    right: 1rem;
+    bottom: 1rem;
+    min-height: 48px;
+    padding: 0.8rem 1rem;
+    font-size: 0.86rem;
+    box-shadow: 0 16px 30px rgba(13, 37, 48, 0.16);
+  }
 }
 
 @media (max-width: 560px) {
@@ -1026,6 +1087,14 @@ textarea {
 
   .product-card img {
     min-height: 250px;
+  }
+
+  .contact-bubble {
+    right: 0.85rem;
+    bottom: 0.85rem;
+    min-height: 44px;
+    padding: 0.72rem 0.95rem;
+    font-size: 0.82rem;
   }
 }
 
